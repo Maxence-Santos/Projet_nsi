@@ -1,5 +1,5 @@
 import rsk
-from get_angle import *
+from metrics import *
 
 zone_goal_gauche= [ # coté vert (c1 et c2)
   (-0.6, 0.45), # poteaux supérieur, (x,y)
