@@ -1,3 +1,4 @@
+# N'a pas été testé
 from math import atan, pi, sqrt
 
 
@@ -79,6 +80,31 @@ def get_theta_def(pos_balle:tuple, cote:str):
         else:
             return (-(pi/2 + alpha[0]),
                     -(pi/2 + alpha[1]))
+
+def get_pos(pos_balle):
+    x_balle = pos_balle[0]
+    y_balle = pos_balle[1]
+    #Cas x- et y-
+    if x_balle < 0 and y_balle < 0:
+        x = x_balle + 0.06
+        y = y_balle - 0.06
+    
+    #Cas x- et y+
+    if x_balle < 0 and y_balle > 0:
+        x = x_balle + 0.06
+        y = y_balle + 0.06
+    
+    #cas x+ et y+
+    if x_balle > 0 and y_balle > 0:
+        x = x_balle - 0.06
+        y = y_balle + 0.06
+    
+    #Cas x+ et y-
+    if x_balle > 0 and y_balle < 0:
+        x = x_balle - 0.06
+        y = y_balle - 0.06
+        
+    return (x,y)
 
 
 if __name__=="__main__":
