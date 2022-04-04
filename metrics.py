@@ -139,6 +139,7 @@ def get_angle_def(pos_balle:tuple, cote_attaque:str):
   return sum(list(get_theta_def(pos_balle, cote_attaque))) / 2
 
 def get_distance_balle(pos_ball:tuple,joueur):
+  """Est-ce que je dois vraiment faire une doc?"""
   pos_joueur = joueur.pose
   return sqrt((pos_ball[0] - pos_joueur[0])**2 + 
         (pos_ball[1] - pos_joueur[1])**2)
