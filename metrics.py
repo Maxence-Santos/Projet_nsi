@@ -114,12 +114,13 @@ def get_pos_cadre(pos_balle:tuple, cote_attaque:str):
         
     return (x,y)
 
-def get_angle_att(pos_balle:tuple, cote_attaque:str):
+def get_angle_att(pos_balle:tuple, cote_attaque:str, robots_adverses:list):
   """Retourne l'angle que doit avoir l'attaquant
 
   Args:
       pos_balle (tuple)
       cote_attaque (str): d ou g
+      robots_adverses (list): liste des robots adverses
 
   Returns:
       float
@@ -138,11 +139,12 @@ def get_angle_def(pos_balle:tuple, cote_attaque:str):
   """
   return sum(list(get_theta_def(pos_balle, cote_attaque))) / 2
 
-def get_distance_balle(pos_ball:tuple,joueur):
+def get_distance(pos_element:tuple,joueur):
   """Est-ce que je dois vraiment faire une doc?"""
   pos_joueur = joueur.pose
-  return sqrt((pos_ball[0] - pos_joueur[0])**2 + 
-        (pos_ball[1] - pos_joueur[1])**2)
+  return sqrt((pos_element[0] - pos_joueur[0])**2 + 
+        (pos_element[1] - pos_joueur[1])**2)
+
 
 
 if __name__=="__main__":
