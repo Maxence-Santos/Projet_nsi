@@ -2,6 +2,7 @@ import rsk
 from os import system
 from metrics import *
 from goal import *
+import metrics_test.
 
 def print_the_ball(client, dt):
     print(client.ball)
@@ -18,7 +19,7 @@ with rsk.Client(host='172.19.66.163', key='') as client:
         print(client.robots['green'][1].pose)
         client.on_update = print_the_ball
         """
-        angle_d = get_angle_def(pos_bal, "g")
+        angle_d = metrics_test.get_angle_def(pos_bal, "g")
         pos_bal = client.ball
         pos_goal = goal(pos_bal)
         robotBleu2.goto((pos_goal[0],pos_goal[1], angle_d), wait=False)
@@ -26,7 +27,7 @@ with rsk.Client(host='172.19.66.163', key='') as client:
         if get_distance_balle(pos_bal, robotBleu2) < 0.05:
             robotBleu2.kick()
         
-        angle_a = get_angle_att(pos_bal, "g")
+        angle_a = metrics_test.get_angle_att(pos_bal, "g")
         pos_att = get_pos_cadre(pos_bal)
         robotVert1.goto((pos_att[0],pos_att[1], angle_a), wait=False)
         if get_distance_balle(pos_bal, robotVert1) < 0.05:
