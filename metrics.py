@@ -1,4 +1,4 @@
-from math import atan, pi, sqrt
+from math import atan, pi, sqrt, cos, sin
 
 
 goal_droit= [ # coté vert (c1 et c2)
@@ -10,6 +10,8 @@ goal_gauche= [
 
 terrain_x = [-0.9, 0.9]
 terrain_y = [-0.6, 0.6]
+
+distance_kick = 0.11
 
 def get_alpha(pos_balle:tuple, goal:list):
   """
@@ -54,7 +56,7 @@ def get_theta_att(pos_balle:tuple, cote:str):
               pi/2 + alpha[1])
     
 def get_theta_def(pos_balle:tuple, cote:str):
-    """
+  """
   Retourne les deux angles theta (voir les explications) pour que le goal soit aligné avec la balle.
   Ceux-ci sont calculés en fonction des deux poteaux pour avoir les deux "extrémités" pour être correctement alignées.
   
@@ -63,58 +65,24 @@ def get_theta_def(pos_balle:tuple, cote:str):
     - cote : str - Côté que l'on attaque. d pour droite, g pour gauche 
                     ( par rapport au sens de l'axe des abscisses ) 
   """
-    if cote.lower() == "d":
-        alpha = get_alpha(pos_balle, goal_droit)
-        if pos_balle[1] > 0:
-            return (pi/2 - alpha[0],
-                    pi/2 - alpha[1])
-        else:
-            return (-(pi/2 - alpha[0]),
-                    -(pi/2 - alpha[1]))
-    elif cote.lower() == "g":
-        alpha = get_alpha(pos_balle, goal_gauche)
-        if pos_balle[1] > 0:
-            return (pi/2 + alpha[0],
-                    pi/2 + alpha[1])
-        else:
-            return (-(pi/2 + alpha[0]),
-                    -(pi/2 + alpha[1]))
+  if cote.lower() == "d":
+    alpha = get_alpha(pos_balle, goal_droit)
+    if pos_balle[1] > 0:
+      return (pi/2 - alpha[0],
+              pi/2 - alpha[1])
+    else:
+      return (-(pi/2 - alpha[0]),
+              -(pi/2 - alpha[1]))
+  elif cote.lower() == "g":
+    alpha = get_alpha(pos_balle, goal_gauche)
+    if pos_balle[1] > 0:
+      return (pi/2 + alpha[0],
+              pi/2 + alpha[1])
+    else:
+      return (-(pi/2 + alpha[0]),
+              -(pi/2 + alpha[1]))
 
-def get_pos_cadre(pos_balle:tuple, cote_attaque:str):
-  """Permet de pouvoir récupérer la position que doit avoir le joueur, en se décalant un peu de la balle pour ne pas lui rouler dessus 
-
-  Args:
-      pos_balle:tuple: Contient client.ball, la position de la balle
-
-  Returns:
-      (x,y)  tuple: Position vers laquelle le joueur doit aller
-  """
-    x_balle = pos_balle[0]
-    y_balle = pos_balle[1]
-    
-    #Cas x- et y-
-    if x_balle < 0 and y_balle < 0:
-        x = x_balle + 0.06
-        y = y_balle - 0.06
-    
-    #Cas x- et y+
-    if x_balle < 0 and y_balle > 0:
-        x = x_balle + 0.06
-        y = y_balle + 0.06
-    
-    #cas x+ et y+
-    if x_balle > 0 and y_balle > 0:
-        x = x_balle - 0.06
-        y = y_balle + 0.06
-    
-    #Cas x+ et y-
-    if x_balle > 0 and y_balle < 0:
-        x = x_balle - 0.06
-        y = y_balle - 0.06
-        
-    return (x,y)
-
-def get_angle_att(pos_balle:tuple, cote_attaque:str, robots_adverses:list):
+def get_angle_att(pos_balle:tuple, cote_attaque:str):
   """Retourne l'angle que doit avoir l'attaquant
 
   Args:
@@ -126,6 +94,48 @@ def get_angle_att(pos_balle:tuple, cote_attaque:str, robots_adverses:list):
       float
   """
   return sum(list(get_theta_att(pos_balle, cote_attaque))) / 2
+
+
+def get_pos_cadre(pos_balle:tuple, cote_attaque:str):
+  """Permet de pouvoir récupérer la position que doit avoir le joueur, en se décalant un peu de la balle pour ne pas lui rouler dessus 
+
+  Args:
+      pos_balle:tuple: Contient client.ball, la position de la balle
+
+  Returns:
+      (x,y)  tuple: Position vers laquelle le joueur doit aller
+  """
+  x_balle = pos_balle[0]
+  y_balle = pos_balle[1]
+
+  theta = get_angle_att(
+    get_theta_att(pos_balle, cote_attaque)
+    , cote_attaque)
+  x_hat = abs(0.09 * cos(theta))
+  y_hat = abs(0.09 * sin(theta))
+
+  #Cas x- et y-
+  if x_balle < 0 and y_balle < 0:
+    x = x_balle + x_hat
+    y = y_balle - y_hat
+  
+  #Cas x- et y+
+  if x_balle < 0 and y_balle > 0:
+    x = x_balle + x_hat
+    y = y_balle + y_hat
+  
+  #cas x+ et y+
+  if x_balle > 0 and y_balle > 0:
+    x = x_balle - x_hat
+    y = y_balle + y_hat
+  
+  #Cas x+ et y-
+  if x_balle > 0 and y_balle < 0:
+    x = x_balle - x_hat
+    y = y_balle - y_hat
+      
+  return (x,y)
+
 
 def get_angle_def(pos_balle:tuple, cote_attaque:str):
   """Retourne l'angle que doit avoir le  goal
@@ -144,6 +154,7 @@ def get_distance(pos_element:tuple,joueur):
   pos_joueur = joueur.pose
   return sqrt((pos_element[0] - pos_joueur[0])**2 + 
         (pos_element[1] - pos_joueur[1])**2)
+
 
 
 if __name__=="__main__":
