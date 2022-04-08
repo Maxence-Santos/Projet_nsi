@@ -1,0 +1,46 @@
+import rsk
+from math import pi
+
+with rsk.Client(host='172.19.66.163', key='') as client:
+    robotVert1 = client.robots['green'][1]
+    robotVert2 = client.robots['green'][2]
+    robotBleu1 = client.robots['blue'][1]
+    robotBleu2 = client.robots['blue'][2]
+
+    def score():
+        max = int(input("En combien de manches se jouera le match ? -> "))
+        score_bleu = 0
+        score_vert = 0
+        print("Manche 1")
+        score_bleu, score_vert = comptage()
+        for i in range(max - 1):
+            input("presser une touche pour continuer")
+            print()
+            print("Manche " + str(i + 2))
+            score_bleu, score_vert = comptage(score_bleu, score_vert)
+        print()
+        print()
+        print("score final")
+        print()
+        print("Equipe Bleu : ", score_bleu)
+        print("Equipe vert : ", score_vert)
+
+    def comptage(score_bleu=0, score_vert=0):
+        print("comptage...")
+        while True :
+            x_balle = client.ball[0]
+            y_balle = client.ball[1]
+            if (x_balle <= -0.9) and (y_balle > -0.3) and (y_balle < 0.3) :
+                print("BUT VERT !!!")
+                score_vert += 1
+                print("Bleu ", score_bleu, " - ", score_vert, " Vert")
+                print()
+                return(score_bleu, score_vert)
+            if (x_balle >= 0.9) and (y_balle > -0.3) and (y_balle < 0.3) :
+                print("BUT BLEU !!!")
+                score_bleu += 1
+                print("Bleu ", score_bleu, " - ", score_vert, " Vert")
+                print()
+                return(score_bleu, score_vert)
+
+    score()
