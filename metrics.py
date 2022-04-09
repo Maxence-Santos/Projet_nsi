@@ -40,22 +40,22 @@ def get_theta_att(pos_balle:tuple, cote:str):
                     ( par rapport au sens de l'axe des abscisses ) 
     
   """
+  angles = []
   if cote.lower() == "d":
-    alpha = get_alpha(pos_balle, goal_droit)
-    if pos_balle[1] > 0:
-      return ( - alpha[0],
-             - alpha[1])
-    else:
-      return (alpha[0],
-              alpha[1])
+    alphas = get_alpha(pos_balle, goal_droit)
+    for alpha, poteau in zip(alphas, goal_droit):
+      if pos_balle[1] > poteau[1]:
+        angles.append(-alpha)
+      else:
+        angles.append(alpha)
   elif cote.lower() == "g":
-    alpha = get_alpha(pos_balle, goal_gauche)
-    if pos_balle[1] > 0:
-      return ( alpha[0] - pi,
-               alpha[1] - pi)
-    else:
-      return (pi - alpha[0],
-              pi - alpha[1])
+    alphas = get_alpha(pos_balle, goal_gauche)
+    for alpha, poteau in zip(alphas, goal_gauche):
+      if pos_balle[1] > poteau[1]:
+        angles.append(alpha + pi)
+      else:
+        angles.append(pi - alpha)
+  return angles
 
 def get_theta_vers_goal(pos_balle:tuple,cote:str, joueurs:list):
   """
@@ -75,13 +75,13 @@ def get_theta_vers_goal(pos_balle:tuple,cote:str, joueurs:list):
   down = (pos_balle[0]-joueur[0])**2
   alpha = atan ( sqrt( up / down ) )
   if cote.lower() == "d":
-    if pos_balle[1] > 0:
+    if pos_balle[1] > joueur[1]:
       return - alpha, joueur
     else:
       return  alpha , joueur
   elif cote.lower() == "g":
-    if pos_balle[1] > 0:
-      return alpha - pi, joueur
+    if pos_balle[1] > joueur[1]:
+      return alpha + pi, joueur
     else:
       return pi - alpha, joueur
     
@@ -95,51 +95,23 @@ def get_theta_def(pos_balle:tuple, cote:str):
     - cote : str - Côté que l'on attaque. d pour droite, g pour gauche 
                     ( par rapport au sens de l'axe des abscisses ) 
   """
+  angles = []
   if cote.lower() == "d":
-    alpha = get_alpha(pos_balle, goal_droit)
-    if pos_balle[1] > 0:
-      return (pi - alpha[0],
-              pi - alpha[1])
-    else:
-      return (pi + alpha[0],
-              pi/2 + alpha[1])
+    alphas = get_alpha(pos_balle, goal_droit)
+    for alpha, poteau in zip(alphas, goal_droit):
+      if pos_balle[1] > poteau[1]:
+        angles.append(alpha)
+      else:
+        angles.append(-alpha)
   elif cote.lower() == "g":
-    alpha = get_alpha(pos_balle, goal_gauche)
-    if pos_balle[1] > 0:
-      return (alpha[0],
-              alpha[1])
-    else:
-      return (-alpha[0],
-              -alpha[1])
+    alphas = get_alpha(pos_balle, goal_gauche)
+    for alpha, poteau in zip(alphas, goal_gauche):
+      if pos_balle[1] > poteau[1]:
+        angles.append(pi - alpha)
+      else:
+        angles.append(alpha - pi)
+  return angles
 
-def get_theta_goal(pos_att:tuple,cote_attaque:str, joueur:list):
-  if cote_attaque.lower() == "d":
-    alpha = [get_alpha(pos_att, [goal_droit[0], tuple(joueur)]),
-              get_alpha(pos_att, [goal_droit[1], tuple(joueur)])
-              ]
-    if pos_att[1] > 0:
-      angles =[ (- alpha[0][0],
-             - alpha[0][1]),
-             (- alpha[1][0],
-             - alpha[1][1])]
-    else:
-      angles = [ (alpha[0][0],
-               alpha[0][1]), 
-              (alpha[1][0],
-              alpha[1][1])]
-  elif cote_attaque.lower() == "g":
-    alpha = [get_alpha(pos_att, [goal_gauche[0], tuple(joueur)]),
-              get_alpha(pos_att, [goal_gauche[1], tuple(joueur)])]
-    if pos_att[1] > 0:
-      angles = [ ( alpha[0][0] - pi,
-              alpha[0][1] - pi),
-              (alpha[1][0] - pi,
-              alpha[1][1] - pi)]
-    else:
-      angles = [(pi - alpha[0][0],
-              pi - alpha[0][1]),
-              (pi - alpha[1][0],
-              pi - alpha[1][1])]
 
 def get_angle_att(pos_balle:tuple, cote_attaque:str, joueurs:list, pos_att:list):
   """Retourne l'angle que doit avoir l'attaquant
@@ -153,14 +125,16 @@ def get_angle_att(pos_balle:tuple, cote_attaque:str, joueurs:list, pos_att:list)
   """
   theta = get_theta_att(pos_balle, cote_attaque)
   theta_adv, joueur = get_theta_vers_goal(pos_balle, cote_attaque, joueurs)
-  print(theta, theta_adv)
   if min(theta) < theta_adv < max(theta):
-    alpha = None
     if cote_attaque.lower() == "d" and joueur[0] > pos_balle[0] or cote_attaque.lower() == "g" and joueur[0] < pos_balle[0]:
-      thetas = get_theta_goal(pos_balle, cote_attaque, joueur)
+      thetas = [(theta[0], theta_adv), (theta[1], theta_adv)]
       
-  angle_values = linspace(min(theta),max(theta),100)[25:75]
-  return choice(angle_values)
+      if abs(thetas[0][0] - thetas[0][1]) > abs(thetas[1][0] - thetas[1][1]):
+        theta = thetas[0]
+      else:
+        theta = thetas[1]
+
+  return sum(list(theta)) / 2
 
 def get_pos_cadre(pos_balle:tuple, cote_attaque:str, angle:float):
   """Permet de pouvoir récupérer la position que doit avoir le joueur, en se décalant un peu de la balle pour ne pas lui rouler dessus 
@@ -178,25 +152,21 @@ def get_pos_cadre(pos_balle:tuple, cote_attaque:str, angle:float):
   x_hat = abs(0.09 * cos(theta))
   y_hat = abs(0.09 * sin(theta))
 
-  #Cas x- et y-
-  if x_balle < 0 and y_balle < 0:
-    x = x_balle + x_hat
-    y = y_balle - y_hat
-  
-  #Cas x- et y+
-  if x_balle < 0 and y_balle > 0:
-    x = x_balle + x_hat
-    y = y_balle + y_hat
-  
-  #cas x+ et y+
-  if x_balle > 0 and y_balle > 0:
-    x = x_balle - x_hat
-    y = y_balle + y_hat
-  
-  #Cas x+ et y-
-  if x_balle > 0 and y_balle < 0:
-    x = x_balle - x_hat
-    y = y_balle - y_hat
+
+  if cote_attaque.lower() == "g":
+    if y_balle < 0:
+      x = x_balle + x_hat
+      y = y_balle - y_hat
+    else:
+      x = x_balle + x_hat
+      y = y_balle + y_hat
+  elif cote_attaque.lower() == "d":
+    if y_balle > 0:
+      x = x_balle - x_hat
+      y = y_balle + y_hat
+    else:
+      x = x_balle - x_hat
+      y = y_balle - y_hat
       
   return (x,y)
 
