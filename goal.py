@@ -16,20 +16,20 @@ def goal(pos_balle,robot):
     pos_robot = robot.position
     print(pos_robot[0] - pos_balle[0])
     if d:
-        if abs(pos_robot[0] - pos_balle[0]) < 0.12:
+        if abs(pos_robot[0] - pos_balle[0]) < 0.15:
             robot.kick()
         a = metrics_test.get_angle_def(pos_balle, "g")
-        if pos_balle[0] <= 0.6 :
+        if pos_balle[0] <= 0.4 :
             x = 0.8
             y = pos_balle[1] /2
         else:
             x = pos_balle[0]
             y = pos_balle[1]
     else:
-        if abs(pos_robot[0] - pos_balle[0]) < 0.12:
+        if abs(pos_robot[0] - pos_balle[0]) < 0.15:
             robot.kick()
         a = metrics_test.get_angle_def(pos_balle, "d")
-        if pos_balle[0] >= -0.6 :
+        if pos_balle[0] >= -0.4 :
             x = -0.8
             y = pos_balle[1] /2
         else:
