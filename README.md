@@ -1,6 +1,11 @@
 # Robot soccer kit
 
-Here's the code we used when we participated to the RSK competition. We managed to get the second place with [Maxence Santos](https://github.com/Maxence-Santos) and [Corentin Laforgue](https://github.com/Corentin-LAFORGUE)
+Here's the code we used when we participated to the RSK competition. We managed to get the second place with it
+
+The team :
+* [Maxence Santos](https://github.com/Maxence-Santos)
+* [Brice Vergnou](https://github.com/Brice-Vergnou)
+* [Corentin Laforgue](https://github.com/Corentin-LAFORGUE)
 
 Robot soccer kit is a project you can find here : https://github.com/robot-soccer-kit/robot-soccer-kit
 
